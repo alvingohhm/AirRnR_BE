@@ -15,7 +15,7 @@ const dbConnect = async (mongoURI) => {
       }
     );
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
     process.exit(1);
   }
 };
