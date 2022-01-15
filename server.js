@@ -32,6 +32,11 @@ app.get("/api/restaurant", restaurantController.getRestaurantWithQuery);
 ////////////////////////////////
 // Get /api/restaurant/123456
 app.get("/api/restaurant/:id", restaurantController.getRestaurantById);
+//////////////////////////////////
+// Restaurant CREATE Routes
+//////////////////////////////////
+// POST /api/restaurant -> payload req.body
+app.post("/api/restaurant", restaurantController.createNewRestaurant);
 
 app.listen(PORT, () => {
   console.log(`

@@ -44,6 +44,7 @@ const restaurantController = {
         .limit(size * 1)
         .skip((page - 1) * size)
         .exec((err, response) => {
+          if (err) throw err;
           if (response) {
             let data = null;
             Array.isArray(response) ? (data = response) : (data = [response]);
@@ -61,7 +62,7 @@ const restaurantController = {
         });
     } catch (error) {
       console.error(error);
-      res.status(500).json({
+      res.json({
         status: "failed",
         msg: "Problem getting data!",
       });
@@ -72,6 +73,7 @@ const restaurantController = {
     // console.log(req.body.id);
     try {
       await Restaurant.findById(req.params.id).exec((err, response) => {
+        if (err) throw err;
         if (response) {
           let data = null;
           Array.isArray(response) ? (data = response) : (data = [response]);
@@ -89,9 +91,31 @@ const restaurantController = {
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({
+      res.json({
         status: "failed",
         msg: "Problem Getting Data!",
+      });
+    }
+  },
+  createNewRestaurant: async (req, res) => {
+    try {
+      await Restaurant.create(req.body, (err, response) => {
+        if (err) throw err;
+        if (response) {
+          let data = null;
+          Array.isArray(response) ? (data = response) : (data = [response]);
+          res.json({
+            status: "ok",
+            msg: "New Restaurant Created!",
+            data: data,
+          });
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      res.json({
+        status: "failed",
+        msg: "Problem Creating Data!",
       });
     }
   },
