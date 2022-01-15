@@ -20,24 +20,18 @@ dbConnect(URI);
 ////////////////////////////////
 // Restaurant Mock Data SEED
 ////////////////////////////////
-// const Test = require("./models/test");
-// const testSeed = require("./data/testSeed");
-// app.get("/api/test/seed", async (req, res) => {
-//   try {
-//     await Test.deleteMany({});
-//     // await Test.collection.drop();
-//     await Test.create(testSeed, (err, data) => {
-//       if (err) throw err;
-//       console.log("added provided data");
-//       res.json({ status: "ok", msg: "Seed Data Saved!" });
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     res.json({ status: "not ok", msg: "error saving data" });
-//   }
-// });
-
-app.get("/restaurant/api/seed", restaurantController.seedMockData);
+app.get("/api/restaurant/seed", restaurantController.seedMockData);
+////////////////////////////////
+// Restaurant Index Routes
+////////////////////////////////
+// Get /api/restaurant?page=3&size=20
+// Get /api/restaurant?find=soup
+app.get("/api/restaurant", restaurantController.getRestaurantWithQuery);
+////////////////////////////////
+// Restaurant Show Routes
+////////////////////////////////
+// Get /api/restaurant/123456
+app.get("/api/restaurant/:id", restaurantController.getRestaurantById);
 
 app.listen(PORT, () => {
   console.log(`
