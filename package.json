@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server",
+    "start": "node server.js",
     "dev": "NODE_ENV=development.local nodemon -r dotenv/config server dotenv_config_path=/home/alvingohhm/projects/airrnr_be/config/.env.development.local",
     "local": "NODE_ENV=local nodemon -r dotenv/config server dotenv_config_path=/home/alvingohhm/projects/airrnr_be/config/.env.local"
   },
@@ -20,5 +20,8 @@
   "devDependencies": {
     "dotenv": "^11.0.0",
     "nodemon": "^2.0.15"
+  },
+  "engines": {
+    "node": "16.13.2"
   }
 }
