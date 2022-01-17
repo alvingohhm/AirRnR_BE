@@ -110,8 +110,6 @@ const userController = {
       const user = await User.findOne({ email })
         .select("password hasRestaurant")
         .exec();
-
-      console.log(user);
       //using bcrypt in user model
       const valid = await user.matchPassword(password);
       //using bcrypt in controller

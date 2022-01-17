@@ -70,7 +70,6 @@ const restaurantController = {
   },
   //get a particular restaurant by id
   getRestaurantById: async (req, res) => {
-    // console.log(req.body.id);
     try {
       await Restaurant.findById(req.params.id).exec((err, response) => {
         if (err) throw err;
