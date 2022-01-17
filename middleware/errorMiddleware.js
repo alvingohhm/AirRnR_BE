@@ -1,6 +1,5 @@
 const errorMiddleware = {
   notFound: (req, res, next) => {
-    console.log("here");
     const error = new Error(`${req.originalUrl} - Not Found`);
     res.status(404);
     next(error);

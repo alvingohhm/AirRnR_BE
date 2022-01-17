@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
+const protect = require("../middleware/authMiddleware");
 
 ////////////////////////////////
 // User Mock Data SEED
@@ -9,13 +10,16 @@ const userController = require("../controllers/userController");
 router.get("/seed", userController.seedMockData);
 
 ////////////////////////////////
-// User Show Routes
+// User Registration Routes
 ////////////////////////////////
-// Get /api/users/123456
-router.get("/:id", userController.getUserById);
+router.post("/", userController.registerUserHandler);
+////////////////////////////////
+// User Show Routes - Auth
+////////////////////////////////
+router.get("/profile", protect, userController.userProfileHandler);
 ////////////////////////////////
 // User Login Authentication
 ////////////////////////////////
-router.post("/login", userController.authUser);
+router.post("/login", userController.loginHandler);
 
 module.exports = router;
