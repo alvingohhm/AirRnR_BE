@@ -1,8 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const dbConnect = require("./dbConnect");
-//api Resolver Controller
-const restaurantController = require("./controller/restaurantController");
+const userRoutes = require("./routes/userRoutes");
+const restaurantRoutes = require("./routes/restaurantRoutes");
+const errorMiddleware = require("./middleware/errorMiddleware");
 
 const app = express();
 const PORT = process.env.PORT; //express port to listen to
@@ -17,26 +18,25 @@ app.use(cors());
 // Connect Database
 ////////////////////////////////////
 dbConnect(URI);
-////////////////////////////////
-// Restaurant Mock Data SEED
-////////////////////////////////
-app.get("/api/restaurant/seed", restaurantController.seedMockData);
-////////////////////////////////
-// Restaurant Index Routes
-////////////////////////////////
-// Get /api/restaurant?page=3&size=20
-// Get /api/restaurant?find=soup
-app.get("/api/restaurant", restaurantController.getRestaurantWithQuery);
-////////////////////////////////
-// Restaurant Show Routes
-////////////////////////////////
-// Get /api/restaurant/123456
-app.get("/api/restaurant/:id", restaurantController.getRestaurantById);
+
 //////////////////////////////////
-// Restaurant CREATE Routes
+// Restaurant Router
 //////////////////////////////////
-// POST /api/restaurant -> payload req.body
-app.post("/api/restaurant", restaurantController.createNewRestaurant);
+//refer to restaurantRoutes.js for all the endpoints
+//📣TO DO: to change the routes from api/restaurant to api/restaurants (pural)
+app.use("/api/restaurant", restaurantRoutes);
+
+//////////////////////////////////
+// User Router
+//////////////////////////////////
+//refer to userRoutes.js for all the endpoints
+app.use("/api/users", userRoutes);
+
+//////////////////////////////////
+// Catach all other routes
+//////////////////////////////////
+app.use(errorMiddleware.notFound);
+app.use(errorMiddleware.errorHandler);
 
 app.listen(PORT, () => {
   console.log(`
