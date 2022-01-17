@@ -17,6 +17,7 @@ router.post("/", userController.registerUserHandler);
 // User Show Routes - Auth
 ////////////////////////////////
 router.get("/profile", protect, userController.userProfileHandler);
+router.get("/:id", userController.getUserById);
 ////////////////////////////////
 // User Login Authentication
 ////////////////////////////////

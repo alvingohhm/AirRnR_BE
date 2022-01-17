@@ -1,4 +1,3 @@
-const bcrypt = require("bcrypt");
 module.exports = [
   {
     name: "Leanne Graham",
@@ -7,7 +6,7 @@ module.exports = [
     gender: "m",
     email: "Sincere@april.biz",
     phone: "1-770-736-8031 x56442",
-    password: bcrypt.hashSync("123456", 12),
+    password: "123456",
     hasRestaurant: false,
   },
   {
@@ -18,7 +17,7 @@ module.exports = [
     gender: "f",
     email: "Shanna@melissa.tv",
     phone: "010-692-6593 x09125",
-    password: bcrypt.hashSync("123456", 12),
+    password: "123456",
     hasRestaurant: false,
   },
   {
@@ -29,7 +28,7 @@ module.exports = [
     gender: "m",
     email: "Nathan@yesenia.net",
     phone: "1-463-123-4447",
-    password: bcrypt.hashSync("123456", 12),
+    password: "123456",
     hasRestaurant: false,
   },
   {
@@ -40,7 +39,7 @@ module.exports = [
     gender: "o",
     email: "Julianne.OConner@kory.org",
     phone: "493-170-9623 x156",
-    password: bcrypt.hashSync("123456", 12),
+    password: "123456",
     hasRestaurant: true,
   },
 ];
