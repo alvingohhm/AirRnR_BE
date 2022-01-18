@@ -31,7 +31,11 @@ const userController = {
         });
       } else {
         res.status(404);
-        return next(Error("User not found!"));
+        res.json({
+          status: "failed",
+          msg: `User not found!`,
+          data: [],
+        });
       }
     } catch (error) {
       return next(Error("Cannot get user profile!"));
@@ -111,10 +115,9 @@ const userController = {
         .select("password hasRestaurant")
         .exec();
       //using bcrypt in user model
-      const valid = await user.matchPassword(password);
       //using bcrypt in controller
       // const valid = await bcrypt.compare(password, user.password);
-      if (user && valid) {
+      if (user && (await user.matchPassword(password))) {
         res.json({
           _id: user._id,
           hasRestaurant: user.hasRestaurant,
@@ -122,7 +125,11 @@ const userController = {
         });
       } else {
         res.status(401);
-        return next(Error("Invalid email or password"));
+        res.json({
+          status: "failed",
+          msg: "Invalid email or password",
+          data: [],
+        });
       }
     } catch (error) {
       return next(error);
