@@ -21,7 +21,9 @@ const userController = {
 
   userProfileHandler: async (req, res, next) => {
     try {
-      const user = await User.findById(req.user.id).exec();
+      const user = await User.findById(req.user.id)
+        .select("-password -createdAt -updatedAt -__v")
+        .exec();
       if (user) {
         data = [user];
         res.json({
@@ -133,6 +135,31 @@ const userController = {
       }
     } catch (error) {
       return next(error);
+    }
+  },
+
+  userProfileUpdateHandler: async (req, res, next) => {
+    try {
+      const updateData = await User.findOneAndUpdate(
+        { _id: req.body._id },
+        { $set: { ...req.body } }
+      ).exec();
+      console.log(updateData);
+      if (updateData) {
+        res.status(200);
+        res.json({
+          status: "ok",
+          msg: "Data successfully updated",
+          data: updateData,
+        });
+      }
+    } catch (err) {
+      res.status(400);
+      res.json({
+        status: "failed",
+        msg: "Data unable to update",
+        data: [],
+      });
     }
   },
 };

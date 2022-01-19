@@ -19,6 +19,11 @@ router.post("/", userController.registerUserHandler);
 router.get("/profile", protect, userController.userProfileHandler);
 // router.get("/:id", userController.getUserById);
 ////////////////////////////////
+// User Update Routes - Auth
+////////////////////////////////
+router.put("/profile", protect, userController.userProfileUpdateHandler);
+
+////////////////////////////////
 // User Login Authentication
 ////////////////////////////////
 router.post("/login", userController.loginHandler);
