@@ -29,7 +29,8 @@ const restaurantSchema = new mongoose.Schema(
         capacity: { type: Number },
         allocated: [
           {
-            from: { type: String },
+            from: { type: Number },
+            to: { type: Number },
             duration: { type: Number },
           },
         ],

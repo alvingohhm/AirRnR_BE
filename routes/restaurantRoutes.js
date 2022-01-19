@@ -18,6 +18,11 @@ router.get("/", restaurantController.getRestaurantWithQuery);
 ////////////////////////////////
 // Get /api/restaurant/123456
 router.get("/:id", restaurantController.getRestaurantById);
+////////////////////////////////
+// Restaurant Show Routes
+////////////////////////////////
+// Get /api/restaurant/slots/123456?date=2022-01-22&pax=3
+router.get("/slots/:id", restaurantController.getRestaurantSlots);
 //////////////////////////////////
 // Restaurant CREATE Routes
 //////////////////////////////////
