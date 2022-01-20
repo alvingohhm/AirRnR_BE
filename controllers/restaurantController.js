@@ -100,6 +100,12 @@ const restaurantController = {
   // get available slots for a specific restaurant
   getRestaurantSlots: async (req, res) => {
     let { date, pax } = req.query;
+    if (!date) {
+      date = "20221225";
+    }
+    if (!pax) {
+      pax = 1;
+    }
 
     let startDate, endDate;
     if (date) {
@@ -131,13 +137,6 @@ const restaurantController = {
 
     const tableArr = restaurantData[0].tables;
 
-    function groupBy(xs, f) {
-      return xs.reduce(
-        (r, v, i, a, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r),
-        {}
-      );
-    }
-
     const openTime = restaurantData[0].openhrs[0].start;
     const endTime = restaurantData[0].openhrs[0].end;
     const queryDate = new Date(startDate);
@@ -168,24 +167,23 @@ const restaurantController = {
     ) {
       slots.push(i);
     }
-    slots.splice(-4, 0);
     const flatAvailable = [];
 
     for (const table of tableArr) {
       const tableNo = "Table" + table.no;
-      availableSlots[tableNo] = slots;
+      availableSlots[tableNo] = slots.map((slot) => slot);
       for (const booking of table.allocated) {
         if (booking.from >= startDate && booking.to <= endDate) {
           const position = availableSlots[tableNo].findIndex(
             (slot) => slot === booking.from
           );
-          availableSlots[tableNo].splice(position, 3);
+          if (position !== -1) {
+            availableSlots[tableNo].splice(position, 4);
+          }
         }
       }
-      for (i = 0; i < availableSlots[tableNo].length - 5; i++) {
+      for (let i = 0; i < availableSlots[tableNo].length - 4; i++) {
         if (
-          availableSlots[tableNo][i + 4] - availableSlots[tableNo][i + 3] ===
-            15 * 60 * 1000 &&
           availableSlots[tableNo][i + 3] - availableSlots[tableNo][i + 2] ===
             15 * 60 * 1000 &&
           availableSlots[tableNo][i + 2] - availableSlots[tableNo][i + 1] ===
@@ -197,7 +195,7 @@ const restaurantController = {
         }
       }
     }
-
+    flatAvailable.sort();
     const uniqueFlatAvailable = flatAvailable.filter(
       (data, index) => flatAvailable.indexOf(data) === index
     );
@@ -210,7 +208,7 @@ const restaurantController = {
 
   createNewRestaurant: async (req, res) => {
     try {
-      await Restaurant.create(req.body, (err, response) => {
+      await Restaurant.create(req.body).exec((err, response) => {
         if (err) throw err;
         if (response) {
           let data = null;
@@ -229,6 +227,100 @@ const restaurantController = {
         msg: "Problem Creating Data!",
       });
     }
+  },
+  createReservation: async (req, res) => {
+    const reservationTime = req.body.time; // e.g. 2.15pm
+    const checkRange = reservationTime - 45 * 60 * 1000; // e.g. 1.30pm - 2.15 pm ==> overlap
+
+    try {
+      restaurant = await Restaurant.find(
+        {
+          _id: req.body.id,
+          tables: { $elemMatch: { capacity: { $gte: req.body.pax } } },
+        },
+        { tables: 1, _id: 0 }
+      );
+    } catch (error) {
+      res.json({
+        status: "failed",
+        msg: "Problem getting tablesByPax!",
+      });
+    }
+
+    try {
+      eliminated = await Restaurant.find(
+        {
+          _id: req.body.id,
+          tables: {
+            $elemMatch: {
+              allocated: {
+                $elemMatch: {
+                  from: {
+                    $in: [
+                      checkRange,
+                      checkRange + 15 * 60 * 1000,
+                      checkRange + 30 * 60 * 1000,
+                      reservationTime,
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+        { tables: { $elemMatch: { no: 1 } }, _id: 0 }
+      );
+    } catch (error) {
+      res.json({
+        status: "failed",
+        msg: "Problem getting tablesEliminated!",
+      });
+    }
+    if (eliminated.length !== 0) {
+      const eliminatedNo = eliminated[0].tables.map((table) => table.no);
+      for (const no of eliminatedNo) {
+        const position = restaurant[0].tables.findIndex(
+          (table) => table.no === eliminatedNo
+        );
+        restaurant[0].tables.splice(position, 1);
+      }
+    }
+    let min = 100;
+    let tableAssigned = null;
+    for (const table of restaurant[0].tables) {
+      if (table.capacity < min) {
+        min = table.capacity;
+        tableAssigned = table["_id"];
+      }
+    }
+
+    try {
+      response = await Restaurant.updateOne(
+        {
+          tables: { $elemMatch: { _id: tableAssigned } },
+        },
+        {
+          $push: {
+            "tables.$[elem].allocated": {
+              from: reservationTime,
+              to: reservationTime + 60 * 60 * 1000,
+              duration: 60,
+            },
+          },
+        },
+        { arrayFilters: [{ "elem._id": tableAssigned }] }
+      );
+    } catch (error) {
+      res.json({
+        status: "failed",
+        msg: "Problem Creating Data!",
+      });
+    }
+
+    res.json({
+      status: "ok!",
+      message: response,
+    });
   },
 };
 

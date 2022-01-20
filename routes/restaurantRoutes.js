@@ -28,5 +28,10 @@ router.get("/slots/:id", restaurantController.getRestaurantSlots);
 //////////////////////////////////
 // POST /api/restaurant -> payload req.body
 router.post("/", restaurantController.createNewRestaurant);
+// Restaurant UPDATE Routes
+//////////////////////////////////
+// POST /api/restaurant/makeReservation
+// payload req.body = {restaurantId, tableNo, date, time, pax}
+router.post("/makeReservation", restaurantController.createReservation);
 
 module.exports = router;
